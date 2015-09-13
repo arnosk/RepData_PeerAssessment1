@@ -61,7 +61,7 @@ Then transform to use dplyr to make analysis easier
 
 
 ```r
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 act <- tbl_df(activity)
 ```
 
@@ -85,8 +85,25 @@ qplot(steps, data=activityDaily, geom="histogram",
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
-The mean of the steps is: 9354.2295082  (`mean(activityDaily$steps, na.rm = TRUE)`)  
-The median of the steps is: 10395 (`median(activityDaily$steps, na.rm = TRUE)`)  
+The mean of the steps is: 
+
+```r
+mean(activityDaily$steps, na.rm = TRUE)
+```
+
+```
+## [1] 9354.23
+```
+
+The median of the steps is: 
+
+```r
+median(activityDaily$steps, na.rm = TRUE)
+```
+
+```
+## [1] 10395
+```
 
 
 ## What is the average daily activity pattern?
@@ -107,19 +124,30 @@ qplot(interval, averageSteps, data=activityTime,
       ylab = "average steps across all days")
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
 
-The 835
-is the 5-minute interval, on average across all the days in the dataset, which contains the maximum number of steps.  
+The 5-minute interval, on average across all the days in the dataset, which contains the maximum number of steps:
 
-The R code is: 
-`activityTime$interval[which(activityTime$averageSteps == max(activityTime$averageSteps))]`
+```r
+activityTime$interval[which(activityTime$averageSteps == max(activityTime$averageSteps))]
+```
+
+```
+## [1] 835
+```
 
 ## Imputing missing values
 
 In the dataset, several rows are missing data. (`NA`). 
-There are a total of 2304 rows with missing data  
-R code: `sum(is.na(activity))`
+The total of rows with missing data:  
+
+```r
+sum(is.na(activity))
+```
+
+```
+## [1] 2304
+```
 
 To impute the missing data, the strategy is to take the mean of the interval of all days
 
@@ -158,15 +186,41 @@ qplot(steps, data=activityDailyImp,
       xlab = "total number of steps taken per day")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
 
-The mean of the steps is: 1.0766189 &times; 10<sup>4</sup>  (`mean(activityDailyImp$steps, na.rm = TRUE)`)  
-The median of the steps is: 1.0766189 &times; 10<sup>4</sup>  (`mean(activityDailyImp$steps, na.rm = TRUE)`)  
+The mean of the steps is: 
+
+```r
+mean(activityDailyImp$steps, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+The median of the steps is: 
+
+```r
+median(activityDailyImp$steps, na.rm = TRUE)
+```
+
+```
+## [1] 10766.19
+```
+  
 
 Only the median values differs slightly from the estimate from the first part of the assignment.  
 The impact of imputing missing data on the estimates is low. 
-The percentage of missing values = 13.1147541%  
-R-code: `sum(missing)/dim(act)[1]*100`
+The percentage of missing values: (in %)
+
+```r
+sum(missing)/dim(act)[1]*100
+```
+
+```
+## [1] 13.11475
+```
+
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -209,4 +263,4 @@ ggplot(activityTimeDayType, aes(interval, averageSteps)) +
              title = "Average Number of Steps Taken")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png) 
