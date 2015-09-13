@@ -4,7 +4,11 @@ output:
   html_document:
     keep_md: true
 ---
+
+```{r}
+# Set all echo's to true
 knitr::opts_chunk$set(echo=TRUE)
+```
 
 ## Loading and preprocessing the data
 1  
@@ -151,8 +155,8 @@ act3 <- mutate(act, dayType = as.factor( ifelse(wday(date)==1 | wday(date)==7,"w
 head(act3)
 ```
 
-Make a new table grouped by the time of the day. (the 5 minute interval) and the type of the day (weekdaty or weekend)
-and a new column with the average number of steps taken, averaged across all days
+Make a new table grouped by the time of the day. (the 5 minute interval) and the type of the day (weekday or weekend)
+and a new column with the average number of steps taken, averaged across the weekdays or the weekend days
 
 ```{r}
 activityTimeDayType <-
