@@ -13,13 +13,25 @@ Which was initial included in this course project.
 The zip file contains one file  `activity.csv`. First load the data from this 
 file.
 
-```{r}
+
+```r
 activity <- read.csv("activity.csv", header=TRUE)
 ```
 
 The first rows looks like:
-```{r}
+
+```r
 head(activity)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 * **steps**: Number of steps taking in a 5-minute interval (missing
@@ -34,14 +46,16 @@ head(activity)
 2  
 The date is now of class factor. Transform this to a Date
 
-```{r}
+
+```r
 library(lubridate)
 activity$date <- ymd(activity$date)
 ```
 
 Then transform to use dplyr to make analysis easier
 
-```{r}
+
+```r
 library(dplyr)
 act <- tbl_df(activity)
 ```
@@ -51,7 +65,8 @@ act <- tbl_df(activity)
 Make a new table with the steps per day.
 And show a histogram of this data
 
-```{r}
+
+```r
 activityDaily <- 
     group_by(act, date) %>%
     summarise(steps = sum(steps, na.rm = TRUE))
@@ -63,8 +78,10 @@ qplot(steps, data=activityDaily, geom="histogram",
       xlab = "total number of steps taken per day")
 ```
 
-The mean of the steps is: `r mean(activityDaily$steps, na.rm = TRUE)`  (`mean(activityDaily$steps, na.rm = TRUE)`)  
-The median of the steps is: `r median(activityDaily$steps, na.rm = TRUE)` (`median(activityDaily$steps, na.rm = TRUE)`)  
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
+The mean of the steps is: 9354.2295082  (`mean(activityDaily$steps, na.rm = TRUE)`)  
+The median of the steps is: 10395 (`median(activityDaily$steps, na.rm = TRUE)`)  
 
 
 ## What is the average daily activity pattern?
@@ -72,7 +89,8 @@ The median of the steps is: `r median(activityDaily$steps, na.rm = TRUE)` (`medi
 Make a new table grouped by the time of the day. (the 5 minute interval) 
 and a new column with the average number of steps taken, averaged across all days
 
-```{r}
+
+```r
 activityTime <-
     group_by(act, interval) %>%
     summarise(averageSteps = mean(steps, na.rm=TRUE))
@@ -82,10 +100,11 @@ qplot(interval, averageSteps, data=activityTime,
       main = "Average Number of Steps Taken", 
       xlab = "5-minute interval", 
       ylab = "average steps across all days")
-    
 ```
 
-The `r activityTime$interval[which(activityTime$averageSteps == max(activityTime$averageSteps))]`
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
+The 835
 is the 5-minute interval, on average across all the days in the dataset, which contains the maximum number of steps.  
 
 The R code is: 
@@ -94,12 +113,13 @@ The R code is:
 ## Imputing missing values
 
 In the dataset, several rows are missing data. (`NA`). 
-There are a total of `r sum(is.na(activity))` rows with missing data  
+There are a total of 2304 rows with missing data  
 R code: `sum(is.na(activity))`
 
 To impute the missing data, the strategy is to take the mean of the interval of all days
 
-```{r}
+
+```r
 # help var
 act2 <- act
 
@@ -119,7 +139,8 @@ imputed <- arrange(imputed, date, interval)
 From this imputed dataset make a new table with the steps per day. 
 And show a histogram of this data. (Same way as first histogram)
 
-```{r}
+
+```r
 activityDailyImp <- 
     group_by(imputed, date) %>%
     summarise(steps = sum(steps))
@@ -130,15 +151,16 @@ qplot(steps, data=activityDailyImp,
       binwidth=2500,
       main = "Histogram of Total Number of Steps Taken per Day", 
       xlab = "total number of steps taken per day")
-
 ```
 
-The mean of the steps is: `r mean(activityDailyImp$steps, na.rm = TRUE)`  (`mean(activityDailyImp$steps, na.rm = TRUE)`)  
-The median of the steps is: `r median(activityDailyImp$steps, na.rm = TRUE)`  (`mean(activityDailyImp$steps, na.rm = TRUE)`)  
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+The mean of the steps is: 1.0766189 &times; 10<sup>4</sup>  (`mean(activityDailyImp$steps, na.rm = TRUE)`)  
+The median of the steps is: 1.0766189 &times; 10<sup>4</sup>  (`mean(activityDailyImp$steps, na.rm = TRUE)`)  
 
 Only the median values differs slightly from the estimate from the first part of the assignment.  
 The impact of imputing missing data on the estimates is low. 
-The percentage of missing values = `r sum(missing)/dim(act)[1]*100`%  
+The percentage of missing values = 13.1147541%  
 R-code: `sum(missing)/dim(act)[1]*100`
 
 
@@ -146,15 +168,30 @@ R-code: `sum(missing)/dim(act)[1]*100`
 
 Add a new column to the datasets with a factor variable with the levels for weekday and weekend days
 
-```{r}
+
+```r
 act3 <- mutate(act, dayType = as.factor( ifelse(wday(date)==1 | wday(date)==7,"weekend","weekday")) )
 head(act3)
+```
+
+```
+## Source: local data frame [6 x 4]
+## 
+##   steps       date interval dayType
+##   (int)     (time)    (int)  (fctr)
+## 1    NA 2012-10-01        0 weekday
+## 2    NA 2012-10-01        5 weekday
+## 3    NA 2012-10-01       10 weekday
+## 4    NA 2012-10-01       15 weekday
+## 5    NA 2012-10-01       20 weekday
+## 6    NA 2012-10-01       25 weekday
 ```
 
 Make a new table grouped by the time of the day. (the 5 minute interval) and the type of the day (weekdaty or weekend)
 and a new column with the average number of steps taken, averaged across all days
 
-```{r}
+
+```r
 activityTimeDayType <-
     group_by(act3, interval, dayType) %>%
     summarise(averageSteps = mean(steps, na.rm=TRUE))
@@ -166,3 +203,5 @@ ggplot(activityTimeDayType, aes(interval, averageSteps)) +
              y = "average steps across weekday levels", 
              title = "Average Number of Steps Taken")
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
